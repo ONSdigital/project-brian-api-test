@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/daiLlew/project-brian-api-test/assert"
+	"github.com/ONSdigital/project-brian-api-test/assert"
 	"github.com/pkg/errors"
 	. "github.com/smartystreets/goconvey/convey"
 	"io"

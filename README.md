@@ -42,6 +42,6 @@ Compare:
     response.body -> /resources/outputs/ott-csdb.json
 ```
 
-:warning: **IMPORTANT:** :warning: The inputs and expected outputs a tightly coupled. If you modify an input file to 
-contains different data you will have to recreate the expected response json and add replace the current 
-`/resources/outputs.zip`. 
+:warning: **IMPORTANT** :warning:
+The inputs and expected outputs a tightly coupled. If you modify an input file to 
+contains different data you will have to recreate the expected response json and add replace the current `/resources/outputs.zip`. 

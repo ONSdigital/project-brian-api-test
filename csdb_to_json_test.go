@@ -13,6 +13,11 @@ import (
 	"net/http"
 	"os"
 	"testing"
+	"time"
+)
+
+const (
+	generateURL = "http://localhost:8083/Services/ConvertCSDB"
 )
 
 type TimeSeriesValue struct {
@@ -106,8 +111,6 @@ func testCSDBToJson(t *testing.T, filename string) {
 					actual = actualTimeSeries[index]
 					expected = expectedTimeSeries[index]
 
-					//t.Logf("verifying actual_%s_timeseries[%d] with expected_%s_timeseries[%d]", filename, index, filename, index)
-
 					So(actual.Description, ShouldResemble, expected.Description)
 
 					So(actual.Type, ShouldResemble, expected.Type)
@@ -170,7 +173,12 @@ func getCSDBRequestBody(filename string) (io.Reader, string, error) {
 }
 
 func postCSDBFile(body io.Reader, contentType string) (*http.Response, error) {
-	resp, err := http.Post("http://localhost:8083/Services/ConvertCSDB", contentType, body)
+	// Requests to generate the csdb json for larger files (UKEA, RAGV) can take a loooooong time.
+	// I've arbitrarily set the timeout to 20 seconds but feel free to alter this as necessary.
+	timeout := time.Duration(20 * time.Second)
+	httpClient := http.Client{Timeout: timeout}
+
+	resp, err := httpClient.Post(generateURL, contentType, body)
 	if err != nil {
 		return nil, err
 	}

@@ -1,0 +1,61 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "yIkYzW7bzAD81zHyuCNmEj4+oxQ=",
+			"path": "github.com/gopherjs/gopherjs/js",
+			"revision": "415225646bb92c4449bb484646f2c95a98402f6f",
+			"revisionTime": "2017-09-27T19:27:36Z"
+		},
+		{
+			"checksumSHA1": "Js/yx9fZ3+wH1wZpHNIxSTMIaCg=",
+			"path": "github.com/jtolds/gls",
+			"revision": "77f18212c9c7edc9bd6a33d383a7b545ce62f064",
+			"revisionTime": "2017-05-03T22:40:06Z"
+		},
+		{
+			"checksumSHA1": "rJab1YdNhQooDiBWNnt7TLWPyBU=",
+			"path": "github.com/pkg/errors",
+			"revision": "c605e284fe17294bda444b34710735b29d1a9d90",
+			"revisionTime": "2017-05-05T04:36:39Z"
+		},
+		{
+			"checksumSHA1": "wVmkBavCZSwHYTDGxa1xOD3RKe0=",
+			"path": "github.com/smartystreets/assertions",
+			"revision": "7678a5452ebea5b7090a6b163f844c133f523da2",
+			"revisionTime": "2018-03-01T16:12:46Z"
+		},
+		{
+			"checksumSHA1": "v6W3GIQMzr3QSXB2NtBa9X7SwiI=",
+			"path": "github.com/smartystreets/assertions/internal/go-render/render",
+			"revision": "7678a5452ebea5b7090a6b163f844c133f523da2",
+			"revisionTime": "2018-03-01T16:12:46Z"
+		},
+		{
+			"checksumSHA1": "r6FauVdOTFnwYQgrKGFuWUbIAJE=",
+			"path": "github.com/smartystreets/assertions/internal/oglematchers",
+			"revision": "7678a5452ebea5b7090a6b163f844c133f523da2",
+			"revisionTime": "2018-03-01T16:12:46Z"
+		},
+		{
+			"checksumSHA1": "c71WVAQlpp3r4I+BtTxRz1Cq1Lw=",
+			"path": "github.com/smartystreets/goconvey/convey",
+			"revision": "ef6db91d284a0e7badaa1f0c404c30aa7dee3aed",
+			"revisionTime": "2018-02-22T19:45:00Z"
+		},
+		{
+			"checksumSHA1": "6Mgn4H/4vpqYGlaIKZ0UwOmJN0E=",
+			"path": "github.com/smartystreets/goconvey/convey/gotest",
+			"revision": "ef6db91d284a0e7badaa1f0c404c30aa7dee3aed",
+			"revisionTime": "2018-02-22T19:45:00Z"
+		},
+		{
+			"checksumSHA1": "FWDhk37bhAwZ2363D/L2xePwR64=",
+			"path": "github.com/smartystreets/goconvey/convey/reporting",
+			"revision": "ef6db91d284a0e7badaa1f0c404c30aa7dee3aed",
+			"revisionTime": "2018-02-22T19:45:00Z"
+		}
+	],
+	"rootPath": "github.com/daiLlew/project-brian-api-test"
+}

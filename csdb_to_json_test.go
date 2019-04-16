@@ -4,9 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/ONSdigital/project-brian-api-test/assert"
+	. "github.com/logrusorgru/aurora"
 	"github.com/pkg/errors"
-	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	diff "github.com/yudai/gojsondiff"
+	"github.com/yudai/gojsondiff/formatter"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
@@ -17,8 +21,14 @@ import (
 )
 
 const (
-	generateURL = "http://localhost:8083/Services/ConvertCSDB"
+	descErrFmt = "timeseries[%d].description did not match the expected value"
+	typeErrFmt = "timmeseries[%d].type did not match the expected value"
+
+	monthsLenErrFmt   = "timmeseries[%d].months length did not match the expected length"
+	quartersLenErrFmt = "incorrect length timmeseries[%d].quarters"
 )
+
+var brianHost = "http://localhost:8083"
 
 type TimeSeriesValue struct {
 	Date          string `json:"date"`
@@ -50,94 +60,139 @@ type TimeSeries struct {
 	Description    Description       `json:"description"`
 }
 
-func Test_Generate_OTT_CSDB_TimeSeries(t *testing.T) {
-	testCSDBToJson(t, "ott")
-}
-
-func Test_Generate_BB_CSDB_TimeSeries(t *testing.T) {
-	testCSDBToJson(t, "bb")
-}
-
-func Test_Generate_BERD_CSDB_TimeSeries(t *testing.T) {
-	t.Logf("testing generated json for BERD.csdb")
-	testCSDBToJson(t, "berd")
-}
-
-func Test_Generate_UKEA_CSDB_TimeSeries(t *testing.T) {
-	testCSDBToJson(t, "ukea")
-}
-
-func Test_Generate_RAGV_CSDB_TimeSeries(t *testing.T) {
-	testCSDBToJson(t, "ragv")
-}
-
-func Test_Generate_SPPI_CSDB_TimeSeries(t *testing.T) {
-	testCSDBToJson(t, "sppi")
-}
-
-func testCSDBToJson(t *testing.T, filename string) {
-	_, err := os.Stat("resources/outputs")
-	if err != nil && os.IsNotExist(err) {
-		t.Fatalf("dir %q does not exist make sure you have unzipped the %q outputs.zip before running the tests", "resources/outputs", "resources/outputs.zip")
+func TestConvert_CSDBToJSON(t *testing.T) {
+	host := os.Getenv("BRIAN_HOST")
+	if len(host) > 0 {
+		brianHost = host
 	}
 
-	Convey(fmt.Sprintf("given a valid %s.csdb file", filename), t, func() {
-		body, contentType, err := getCSDBRequestBody(filename)
-		So(err, ShouldBeNil)
+	info(t, fmt.Sprintf("\nTest config:\n\t%q:%q\n", "BRIAN_HOST", brianHost))
 
-		Convey("when a POST request is sent to /Services/ConvertCSDB", func() {
-			response, err := postCSDBFile(body, contentType)
-			So(err, ShouldBeNil)
+	if !exists("resources/outputs") {
+		t.Errorf(Err(fmt.Sprintf("dir %q does not exist", "resources/outputs")))
+		t.Fatalf(Err(fmt.Sprintf("make sure you have unzipped %q before running the tests", "resources/outputs.zip")))
+	}
 
-			defer response.Body.Close()
+	csdbFilenames := []string{
+		"ott",
+		"bb",
+		"berd",
+		"ukea",
+		"ragv",
+		"sppi",
+	}
 
-			Convey("then a 200 response status is returned", func() {
-				So(response.StatusCode, ShouldEqual, 200)
-			})
-
-			actualTimeSeries, err := readCSDBResponse(response)
-			So(err, ShouldBeNil)
-
-			expectedTimeSeries, err := getExpectedResults(filename)
-			So(err, ShouldBeNil)
-
-			Convey("and the correct timeSeries json response is returned", func() {
-				So(actualTimeSeries, ShouldHaveLength, len(expectedTimeSeries))
-
-				var actual TimeSeries
-				var expected TimeSeries
-
-				for index := 0; index < len(actualTimeSeries); index++ {
-					actual = actualTimeSeries[index]
-					expected = expectedTimeSeries[index]
-
-					So(actual.Description, ShouldResemble, expected.Description)
-
-					So(actual.Type, ShouldResemble, expected.Type)
-
-					So(actual.Years, ShouldHaveLength, len(expected.Years))
-					for yearIndex := 0; yearIndex < len(actual.Years); yearIndex++ {
-						So(actual.Years[yearIndex], assert.ShouldEqualYear(index, yearIndex), expected.Years[yearIndex])
-					}
-
-					So(actual.Months, ShouldHaveLength, len(expected.Months))
-
-					for monthIndex := 0; monthIndex < len(actual.Months); monthIndex++ {
-						So(actual.Months[monthIndex], assert.ShouldEqualMonth(index, monthIndex), expected.Months[monthIndex])
-					}
-
-					So(actual.Quarters, ShouldHaveLength, len(expected.Quarters))
-
-					for quarterIndex := 0; quarterIndex < len(actual.Quarters); quarterIndex++ {
-						So(actual.Quarters[quarterIndex], assert.ShouldEqualQuarter(index, quarterIndex), expected.Quarters[quarterIndex])
-					}
-				}
-			})
+	for _, filename := range csdbFilenames {
+		t.Run(fmt.Sprintf("%s.csdb", filename), func(t *testing.T) {
+			testCSDBJSONGeneration(t, filename)
 		})
-	})
+	}
+}
+
+func testCSDBJSONGeneration(t *testing.T, filename string) {
+	Scenario(t, fmt.Sprintf("The correct JSON is generated for a given %s.csdb file", filename))
+
+	Given(t, fmt.Sprintf("a valid %s.csdb file", filename))
+	body, contentType, err := getCSDBRequestBody(filename)
+	require.Nil(t, err, Red("error creating POST request").String())
+
+	When(t, "a POST request is sent to /Services/ConvertCSDB")
+	response, err := postCSDBFile(body, contentType)
+	require.Nil(t, err, Err("error sending POST request"))
+
+	defer func() {
+		if err := response.Body.Close(); err != nil {
+			panic(err)
+		}
+	}()
+
+	Then(t, "a 200 response status is returned")
+	require.Equal(t, response.StatusCode, 200, Err("incorrect http response status code for POST CSDB request"))
+
+	actualTimeSeries, err := readCSDBResponse(response)
+	require.Nil(t, err, Err("error reading csdb response json"))
+
+	expectedTimeSeries, err := getExpectedResults(filename)
+	require.Nil(t, err, Err("error reading expected csdb json file"))
+
+	And(t, "the expected number of timeSeries results are returned")
+	require.Equal(t, len(expectedTimeSeries), len(actualTimeSeries), Err("timeseries results length does not match expected"))
+
+	var actual TimeSeries
+	var expected TimeSeries
+
+	And(t, "each time series value is as expected")
+
+	for index := 0; index < len(actualTimeSeries); index++ {
+		actual = actualTimeSeries[index]
+		expected = expectedTimeSeries[index]
+
+		require.Equal(t, actual.Description, expected.Description, descErrFmt, index)
+		require.Equal(t, actual.Type, expected.Type, typeErrFmt, index)
+		require.Len(t, actual.Years, len(expected.Years), "timeseries[%d].years length does not match expected", index)
+
+		for yearIndex := 0; yearIndex < len(actual.Years); yearIndex++ {
+			compareTimeSeriesValue(t, actual.Years[yearIndex], expected.Years[yearIndex], "actual did not match expected", "years", index, yearIndex)
+		}
+
+		require.Len(t, actual.Months, len(expected.Months), monthsLenErrFmt, index)
+		for monthIndex := 0; monthIndex < len(actual.Months); monthIndex++ {
+			compareTimeSeriesValue(t, actual.Months[monthIndex], expected.Months[monthIndex], "actual did not match expected", "months", index, monthIndex)
+		}
+
+		require.Len(t, actual.Quarters, len(expected.Quarters), quartersLenErrFmt, index)
+		for quarterIndex := 0; quarterIndex < len(actual.Quarters); quarterIndex++ {
+			compareTimeSeriesValue(t, actual.Quarters[quarterIndex], expected.Quarters[quarterIndex], "actual did not match expected", "quarters", index, quarterIndex)
+		}
+	}
+	info(t, "Passed")
+}
+
+func compareTimeSeriesValue(t *testing.T, actual, expected TimeSeriesValue, reason string, fieldName string, tsIndex, fieldIndex int) {
+	if !assert.ObjectsAreEqual(actual, expected) {
+		location := fmt.Sprintf("timeseries[%d].%s[%d]", tsIndex, fieldName, fieldIndex)
+		jsonDiff := getJSONDiff(actual, expected)
+
+		errReportFmt := "\n%s: %s\n%s: %s\n%s:\n%s"
+		t.Fatalf(errReportFmt,
+			Bold(Red("Reason")), Red(reason),
+			Bold(Red("Location")), Red(location),
+			Bold(Red("JSON Diff:")), jsonDiff)
+	}
+}
+
+func getJSONDiff(a, b interface{}) string {
+	astr, _ := json.Marshal(a)
+	bstr, _ := json.Marshal(b)
+
+	differ := diff.New()
+	d, err := differ.Compare(astr, bstr)
+	if err != nil {
+		panic(err)
+	}
+
+	var aJson map[string]interface{}
+	json.Unmarshal(astr, &aJson)
+
+	config := formatter.AsciiFormatterConfig{
+		ShowArrayIndex: true,
+		Coloring:       true,
+	}
+
+	formatter := formatter.NewAsciiFormatter(aJson, config)
+	diffString, err := formatter.Format(d)
+	if err != nil {
+		panic(err)
+	}
+	return diffString
 }
 
 func getCSDBRequestBody(filename string) (io.Reader, string, error) {
+	filepath := fmt.Sprintf("resources/inputs/%s.csdb", filename)
+	if !exists(filepath) {
+		return nil, "", errors.Errorf("input file %s.csdb does not exist", filename)
+	}
+
 	body := &bytes.Buffer{}
 	bodyWriter := multipart.NewWriter(body)
 
@@ -146,7 +201,7 @@ func getCSDBRequestBody(filename string) (io.Reader, string, error) {
 		return nil, "", err
 	}
 
-	f, err := os.Open(fmt.Sprintf("resources/inputs/%s.csdb", filename))
+	f, err := os.Open(filepath)
 	if err != nil {
 		return nil, "", err
 	}
@@ -178,7 +233,8 @@ func postCSDBFile(body io.Reader, contentType string) (*http.Response, error) {
 	timeout := time.Duration(20 * time.Second)
 	httpClient := http.Client{Timeout: timeout}
 
-	resp, err := httpClient.Post(generateURL, contentType, body)
+	url := fmt.Sprintf("%s/Services/ConvertCSDB", brianHost)
+	resp, err := httpClient.Post(url, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -211,4 +267,44 @@ func getExpectedResults(filename string) ([]TimeSeries, error) {
 		return nil, err
 	}
 	return expected, nil
+}
+
+func exists(path string) bool {
+	_, err := os.Stat(path)
+	if err != nil && os.IsNotExist(err) {
+		return false
+	}
+	return true
+}
+
+func info(t *testing.T, message string) {
+	ToColour(t, Cyan, "info", message)
+}
+
+func ToColour(t *testing.T, colour func(arg interface{}) Value, prefix string, message string) {
+	t.Logf("%s: %s", Bold(colour(prefix)).String(), colour(message).String())
+}
+
+func Scenario(t *testing.T, message string) {
+	ToColour(t, Green, "Scenario", message)
+}
+
+func Given(t *testing.T, message string) {
+	ToColour(t, Green, "Given", message)
+}
+
+func When(t *testing.T, message string) {
+	ToColour(t, Green, "When", message)
+}
+
+func Then(t *testing.T, message string) {
+	ToColour(t, Green, "Then", message)
+}
+
+func And(t *testing.T, message string) {
+	ToColour(t, Green, "And", message)
+}
+
+func Err(message string) string {
+	return Red(message).String()
 }

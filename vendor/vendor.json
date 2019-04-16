@@ -3,16 +3,17 @@
 	"ignore": "test",
 	"package": [
 		{
-			"checksumSHA1": "yIkYzW7bzAD81zHyuCNmEj4+oxQ=",
-			"path": "github.com/gopherjs/gopherjs/js",
-			"revision": "415225646bb92c4449bb484646f2c95a98402f6f",
-			"revisionTime": "2017-09-27T19:27:36Z"
+			"checksumSHA1": "OFu4xJEIjiI8Suu+j/gabfp+y6Q=",
+			"origin": "github.com/stretchr/testify/vendor/github.com/davecgh/go-spew/spew",
+			"path": "github.com/davecgh/go-spew/spew",
+			"revision": "4d4bfba8f1d1027c4fdbe371823030df51419987",
+			"revisionTime": "2017-01-30T11:31:45Z"
 		},
 		{
-			"checksumSHA1": "Js/yx9fZ3+wH1wZpHNIxSTMIaCg=",
-			"path": "github.com/jtolds/gls",
-			"revision": "77f18212c9c7edc9bd6a33d383a7b545ce62f064",
-			"revisionTime": "2017-05-03T22:40:06Z"
+			"checksumSHA1": "3WQpCT56qpf4vrFs7ReOn0VQQpo=",
+			"path": "github.com/logrusorgru/aurora",
+			"revision": "a7b3b318ed4e1ae5b80602b08627267303c68572",
+			"revisionTime": "2018-10-02T19:45:14Z"
 		},
 		{
 			"checksumSHA1": "rJab1YdNhQooDiBWNnt7TLWPyBU=",
@@ -21,41 +22,50 @@
 			"revisionTime": "2017-05-05T04:36:39Z"
 		},
 		{
-			"checksumSHA1": "wVmkBavCZSwHYTDGxa1xOD3RKe0=",
-			"path": "github.com/smartystreets/assertions",
-			"revision": "7678a5452ebea5b7090a6b163f844c133f523da2",
-			"revisionTime": "2018-03-01T16:12:46Z"
+			"checksumSHA1": "zKKp5SZ3d3ycKe4EKMNT0BqAWBw=",
+			"origin": "github.com/stretchr/testify/vendor/github.com/pmezard/go-difflib/difflib",
+			"path": "github.com/pmezard/go-difflib/difflib",
+			"revision": "4d4bfba8f1d1027c4fdbe371823030df51419987",
+			"revisionTime": "2017-01-30T11:31:45Z"
 		},
 		{
-			"checksumSHA1": "v6W3GIQMzr3QSXB2NtBa9X7SwiI=",
-			"path": "github.com/smartystreets/assertions/internal/go-render/render",
-			"revision": "7678a5452ebea5b7090a6b163f844c133f523da2",
-			"revisionTime": "2018-03-01T16:12:46Z"
+			"checksumSHA1": "ZZ3sHehq/vG9sgKB7IFIHg3Uq98=",
+			"origin": "github.com/yudai/gojsondiff/vendor/github.com/sergi/go-diff/diffmatchpatch",
+			"path": "github.com/sergi/go-diff/diffmatchpatch",
+			"revision": "0525c875b75ca60b9e67ddc44496aa16f21066b0",
+			"revisionTime": "2018-05-04T02:02:46Z"
 		},
 		{
-			"checksumSHA1": "r6FauVdOTFnwYQgrKGFuWUbIAJE=",
-			"path": "github.com/smartystreets/assertions/internal/oglematchers",
-			"revision": "7678a5452ebea5b7090a6b163f844c133f523da2",
-			"revisionTime": "2018-03-01T16:12:46Z"
+			"checksumSHA1": "JXUVA1jky8ZX8w09p2t5KLs97Nc=",
+			"path": "github.com/stretchr/testify/assert",
+			"revision": "4d4bfba8f1d1027c4fdbe371823030df51419987",
+			"revisionTime": "2017-01-30T11:31:45Z"
 		},
 		{
-			"checksumSHA1": "c71WVAQlpp3r4I+BtTxRz1Cq1Lw=",
-			"path": "github.com/smartystreets/goconvey/convey",
-			"revision": "ef6db91d284a0e7badaa1f0c404c30aa7dee3aed",
-			"revisionTime": "2018-02-22T19:45:00Z"
+			"checksumSHA1": "2PpOCNkWnshDrXeCVH2kp3VHhIM=",
+			"path": "github.com/stretchr/testify/require",
+			"revision": "4d4bfba8f1d1027c4fdbe371823030df51419987",
+			"revisionTime": "2017-01-30T11:31:45Z"
 		},
 		{
-			"checksumSHA1": "6Mgn4H/4vpqYGlaIKZ0UwOmJN0E=",
-			"path": "github.com/smartystreets/goconvey/convey/gotest",
-			"revision": "ef6db91d284a0e7badaa1f0c404c30aa7dee3aed",
-			"revisionTime": "2018-02-22T19:45:00Z"
+			"checksumSHA1": "jxa5QGd5XWyonlS+O/C9Fadmafc=",
+			"path": "github.com/yudai/gojsondiff",
+			"revision": "0525c875b75ca60b9e67ddc44496aa16f21066b0",
+			"revisionTime": "2018-05-04T02:02:46Z"
 		},
 		{
-			"checksumSHA1": "FWDhk37bhAwZ2363D/L2xePwR64=",
-			"path": "github.com/smartystreets/goconvey/convey/reporting",
-			"revision": "ef6db91d284a0e7badaa1f0c404c30aa7dee3aed",
-			"revisionTime": "2018-02-22T19:45:00Z"
+			"checksumSHA1": "50gdo5Kq0/gEKG1A4agCPOZ26JA=",
+			"path": "github.com/yudai/gojsondiff/formatter",
+			"revision": "0525c875b75ca60b9e67ddc44496aa16f21066b0",
+			"revisionTime": "2018-05-04T02:02:46Z"
+		},
+		{
+			"checksumSHA1": "nKKDgRfh40Ym+wg/JlQSXT43TP4=",
+			"origin": "github.com/yudai/gojsondiff/vendor/github.com/yudai/golcs",
+			"path": "github.com/yudai/golcs",
+			"revision": "0525c875b75ca60b9e67ddc44496aa16f21066b0",
+			"revisionTime": "2018-05-04T02:02:46Z"
 		}
 	],
-	"rootPath": "github.com/daiLlew/project-brian-api-test"
+	"rootPath": "github.com/ONSdigital/project-brian-api-test"
 }

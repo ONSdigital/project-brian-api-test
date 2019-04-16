@@ -24,6 +24,8 @@ go get github.com/ONSdigital/project-brian-api-test
 ```
 go test -v -failfast
 ```
+![Alt text](/resources/susccess.png?raw=true)
+
 
 While you can use `goconvey` to run the tests it is discouraged. The number of assertions to verify the larger `.csdb` 
 files do not play nicely with the browser UI.  
